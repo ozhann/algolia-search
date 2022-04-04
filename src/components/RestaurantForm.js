@@ -9,6 +9,7 @@ const RestaurantForm = () => {
     rating: '',
   });
   const [showForm, setShowForm] = React.useState(false);
+  const [isAdded, setIsAdded] = React.useState(false);
   const indexName = 'instant_restaurant';
   const searchClient = algoliasearch(
     process.env.REACT_APP_ALGOLIA_APP_ID,
@@ -21,39 +22,39 @@ const RestaurantForm = () => {
       await index.saveObject(restaurant, {
         autoGenerateObjectIDIfNotExist: true,
       });
-      console.log('added');
+      setRestaurant({
+        name: '',
+        cuisine: '',
+        price_range: '',
+        rating: '',
+      });
+      setIsAdded(true);
+      setTimeout(() => {
+        setIsAdded(false);
+      }, 3000);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const clearForm = () => {
-    setRestaurant({
-      name: '',
-      cuisine: '',
-      price_range: '',
-      rating: '',
-    });
-  };
-  console.log({ restaurant });
-
   return (
-    <div>
+    <div data-testid='restaurant-form'>
       <button
         onClick={() => setShowForm(!showForm)}
-        className='px-4 py-2 border border-gray-400 rounded'
+        className='px-4 py-2 border border-gray-400 bg-green-200 rounded'
       >
-        Add New Restaurant
+        Add Restaurant
       </button>
       {showForm && (
-        <div classNama=' mt-8 w-1/2 justify-between'>
-          <div className='my-2'>
+        <div>
+          <div className='my-2 '>
             <label htmlFor='name'>
               Restaurant Name
               <input
                 className='border border-gray-500 ml-2 rounded'
                 type='text'
                 id='name'
+                value={restaurant.name}
                 onChange={(e) =>
                   setRestaurant({ ...restaurant, name: e.target.value })
                 }
@@ -68,6 +69,7 @@ const RestaurantForm = () => {
                 className='border border-gray-500 ml-2 rounded'
                 type='text'
                 id='cuisine'
+                value={restaurant.cuisine}
                 onChange={(e) =>
                   setRestaurant({ ...restaurant, cuisine: e.target.value })
                 }
@@ -81,6 +83,7 @@ const RestaurantForm = () => {
               className='border border-gray-500 ml-2 pl-2 py-1 rounded'
               name='price_range'
               id='price_range'
+              value={restaurant.price_range}
               onChange={(e) =>
                 setRestaurant({ ...restaurant, price_range: e.target.value })
               }
@@ -97,6 +100,7 @@ const RestaurantForm = () => {
               <input
                 className='border border-gray-500 ml-2 pl-4 rounded'
                 type='number'
+                value={restaurant.rating}
                 id='rating'
                 min='1'
                 max='5'
@@ -106,13 +110,15 @@ const RestaurantForm = () => {
               />
             </label>
           </div>
-
-          <button
-            className='px-2 py-1 border border-gray-400 rounded bg-blue-500 text-white'
-            onClick={() => addRestaurant(restaurant)}
-          >
-            Submit
-          </button>
+          <div className='flex'>
+            <button
+              className='px-2 py-1 border border-gray-400 rounded bg-blue-500 text-white'
+              onClick={() => addRestaurant(restaurant)}
+            >
+              Submit
+            </button>
+            {isAdded && <div className='mt-2 pl-2'>Restaurant is added</div>}
+          </div>
         </div>
       )}
     </div>
